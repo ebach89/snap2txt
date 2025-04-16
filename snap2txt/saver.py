@@ -15,6 +15,21 @@ def read_list_file(file_path):
         print(f"List file not found: {file_path}")
         return []
 
+
+def validate_listfile_content(alist, rootdir):
+    results = []
+    for file in alist:
+        full_path = os.path.join(rootdir, file)
+
+        if os.path.exists(full_path):
+            results.append(True)
+        else:
+            print(f"The file '{file}' does NOT exist.")
+            results.append(False)
+
+    # success if all files exist
+    return all(results)
+
 def match_pattern(pattern, alist):
     """
     Check if a given path matches any of the line in the alist.
@@ -71,8 +86,35 @@ def save_project_structure_and_files(root_path, output_file, ignore_list=None, w
         f.write("\n".join(files_content))
 
 
+def create_llm_context(rootdir, output_file, files_list):
+    """
+    Save the project structure and contents of all files in the project to a
+    text file
+    """
+    project_structure = []
+    files_content = []
+
+    for file in files_list:
+        full_path = os.path.join(rootdir, file)
+        project_structure.append(file)
+
+        try:
+            with open(full_path, 'r') as f:
+                content = f.read()
+            files_content.append(f"{file}:\n```\n{content}\n```\n")
+        except Exception as e:
+            files_content.append(f"{file}:\n```\nError reading file: {e}\n```\n")
+
+    with open(output_file, 'w') as f:
+        f.write("Project Structure:\n")
+        f.write("\n".join(project_structure) + "\n\n")
+        f.write("File Contents:\n")
+        f.write("\n".join(files_content))
+
+
 def main():
     script_dir = os.path.dirname(__file__)
+    project_root = os.getcwd()
 
     parser = argparse.ArgumentParser(description="Save project structure and file contents.")
     parser.add_argument("--il", nargs='?', const=None, default=None,
@@ -96,5 +138,12 @@ def main():
 
     ignore_list = read_list_file(il_file)
     whitelist = read_list_file(wl_file)
+
+    if validate_listfile_content(whitelist, project_root):
+        create_llm_context(project_root, 'project_contents.txt', whitelist)
+        sys.exit(0)
+    else:
+        print("N.B.: Original script does not work properly. Exit...")
+        sys.exit(1)
 
     save_project_structure_and_files('.', 'project_contents.txt', ignore_list, whitelist)
