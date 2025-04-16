@@ -63,24 +63,31 @@ def save_project_structure_and_files(root_path, output_file, ignore_list=None, w
         f.write("File Contents:\n")
         f.write("\n".join(file_contents))
 
+
 def main():
     script_dir = os.path.dirname(__file__)
-    il_file = os.path.join(script_dir, '.il')
-    wl_file = os.path.join(script_dir, '.wl')
 
     parser = argparse.ArgumentParser(description="Save project structure and file contents.")
-    parser.add_argument("--il", help="Use ignore list (.il file)", action="store_true")
-    parser.add_argument("--wl", help="Use whitelist (.wl file)", action="store_true")
-    parser.add_argument("--show-locations", help="Show the location of the .il and .wl files", action="store_true")
+    parser.add_argument("--il", nargs='?', const=None, default=None,
+                        help="Use ignore list file (default: .il)")
+    parser.add_argument("--wl", nargs='?', const=None, default=None,
+                        help="Use whitelist file (default: .wl)")
+    parser.add_argument("--show-locations",
+                        help="Show the location of the default .il and .wl files",
+                        action="store_true")
 
     args = parser.parse_args()
+
+    # Determine file paths
+    il_file = os.path.join(script_dir, '.il') if not args.il else args.il
+    wl_file = os.path.join(script_dir, '.wl') if not args.wl else args.wl
 
     if args.show_locations:
         print("IL file is located at:", il_file)
         print("WL file is located at:", wl_file)
         sys.exit(0)
 
-    ignore_list = read_list_file(il_file) if args.il else None
-    whitelist = read_list_file(wl_file) if args.wl else None
+    ignore_list = read_list_file(il_file)
+    whitelist = read_list_file(wl_file)
 
     save_project_structure_and_files('.', 'project_contents.txt', ignore_list, whitelist)
