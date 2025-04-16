@@ -2,6 +2,8 @@ import os
 import sys
 import argparse
 
+from IPython import embed
+
 def read_list_file(file_path):
     """
     Read a list file (.il or .wl) and return the list of patterns.
