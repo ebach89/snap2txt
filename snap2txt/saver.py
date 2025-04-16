@@ -15,12 +15,12 @@ def read_list_file(file_path):
         print(f"List file not found: {file_path}")
         return []
 
-def match_pattern(path, patterns):
+def match_pattern(pattern, alist):
     """
-    Check if a given path matches any of the patterns in the list.
+    Check if a given path matches any of the line in the alist.
     """
-    for pattern in patterns or []:
-        if pattern in path:
+    for line in alist or []:
+        if pattern in line:
             return True
     return False
 
