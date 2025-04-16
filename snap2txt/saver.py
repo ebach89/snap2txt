@@ -34,11 +34,18 @@ def save_project_structure_and_files(root_path, output_file, ignore_list=None, w
 
     for root, dirs, files in os.walk(root_path):
         # Filter directories and files based on ignore_list and whitelist
-        dirs[:] = [
-            d for d in dirs
-            if not match_pattern(d, ignore_list) and
-               (not whitelist or match_pattern(d, whitelist))
-        ]
+        if whitelist:
+            dirs[:] = [
+                d for d in dirs
+                if not match_pattern(d, ignore_list) and
+                    match_pattern(d, whitelist)
+            ]
+        else:
+            dirs[:] = [
+                d for d in dirs
+                if not match_pattern(d, ignore_list)
+            ]
+
         files = [
             f for f in files
             if not match_pattern(f, ignore_list) and
