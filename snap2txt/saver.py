@@ -30,7 +30,7 @@ def save_project_structure_and_files(root_path, output_file, ignore_list=None, w
     considering ignore and whitelist.
     """
     project_structure = []
-    file_contents = []
+    files_content = []
 
     for root, dirs, files in os.walk(root_path):
         # Filter directories and files based on ignore_list and whitelist
@@ -60,15 +60,15 @@ def save_project_structure_and_files(root_path, output_file, ignore_list=None, w
             try:
                 with open(os.path.join(root, file), 'r') as f:
                     content = f.read()
-                file_contents.append(f"{file}:\n```\n{content}\n```\n")
+                files_content.append(f"{file}:\n```\n{content}\n```\n")
             except Exception as e:
-                file_contents.append(f"{file}:\n```\nError reading file: {e}\n```\n")
+                files_content.append(f"{file}:\n```\nError reading file: {e}\n```\n")
 
     with open(output_file, 'w') as f:
         f.write("Project Structure:\n")
         f.write("\n".join(project_structure) + "\n\n")
         f.write("File Contents:\n")
-        f.write("\n".join(file_contents))
+        f.write("\n".join(files_content))
 
 
 def main():
